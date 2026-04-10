@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VHO Gaming</title>
+<link rel="stylesheet" href="index.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Exo+2:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<style>
+
+</style>
+</head>
+<body class="bg-light">
+
+<!-- ═══════════════════ AUTH SCREEN ═══════════════════ -->
+<section id="auth-screen" aria-label="Autenticación" class="container-fluid">
+  <div class="auth-card mx-auto">
+    <div class="auth-brand">
+      <div class="auth-logo"><i class="bi bi-controller"></i></div>
+      <h2>VHO GAMING</h2>
+      <p id="auth-subtitle">Inicia sesión para continuar</p>
+    </div>
+
+    <div class="d-flex gap-2 mb-3">
+      <button type="button" id="auth-tab-login" class="subtab-btn active" onclick="cambiarModoAuth('login')">Login</button>
+      <button type="button" id="auth-tab-register" class="subtab-btn" onclick="cambiarModoAuth('register')">Registro</button>
+    </div>
+
+    <form id="auth-form" onsubmit="enviarAutenticacion(event)">
+      <div class="form-group" id="auth-group-username" style="display:none;">
+        <label>Nombre de usuario</label>
+        <input type="text" id="auth-username" class="form-control form-control-ng" placeholder="Ej. OmarDev">
+      </div>
+
+      <div class="form-group">
+        <label>Correo</label>
+        <input type="email" id="auth-email" class="form-control form-control-ng" placeholder="correo@dominio.com" required>
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="auth-password" class="form-control form-control-ng" placeholder="Mínimo 8 caracteres" required>
+      </div>
+
+      <button type="submit" id="auth-submit" class="btn btn-dark btn-primary-ng w-100">Entrar</button>
+    </form>
+  </div>
+</section>
+ 
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="gamepad-icon"><i class="bi bi-controller"></i></div>
+    <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;color:#111;">VHO GAMING</div>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-user-card">
+      <div class="avatar" id="sidebar-avatar">U</div>
+      <div class="uname" id="sidebar-uname">Usuario</div>
+      <div class="uemail" id="sidebar-uemail">correo@dominio.com</div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-item-custom active" data-page="dashboard" onclick="goTo('dashboard', this)">
+      <i class="bi bi-speedometer2"></i> Dashboard
+    </div>
+    <div class="nav-item-custom" data-page="estaciones" onclick="goTo('estaciones', this)">
+      <i class="bi bi-pc-display"></i> Estaciones
+    </div>
+    <div class="nav-item-custom" data-page="inventario" onclick="goTo('inventario', this)">
+      <i class="bi bi-box-seam"></i> Inventario
+    </div>
+    <div class="nav-item-custom" data-page="finanzas" onclick="goTo('finanzas', this)">
+      <i class="bi bi-graph-up-arrow"></i> Finanzas
+    </div>
+  </div>
+  <div class="sidebar-logout">
+    <button class="btn-logout" onclick="logout()">
+      <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
+    </button>
+  </div>
+</nav>
+
+<nav id="mobile-topbar" aria-label="Barra superior móvil">
+  <div class="mobile-topbar-brand">
+    <div class="mobile-topbar-icon"><i class="bi bi-controller"></i></div>
+    <div class="mobile-topbar-title">VHO GAMING</div>
+  </div>
+  <div class="mobile-topbar-user">
+    <div class="mobile-avatar" id="mobile-sidebar-avatar">U</div>
+    <div class="mobile-user-meta">
+      <div class="mobile-uname" id="mobile-sidebar-uname">Usuario</div>
+      <div class="mobile-uemail" id="mobile-sidebar-uemail">correo@dominio.com</div>
+    </div>
+  </div>
+  <button class="mobile-logout-btn" onclick="logout()" title="Cerrar sesión">
+    <i class="bi bi-box-arrow-left"></i>
+  </button>
+</nav>
+
+<div id="mobile-subnav" aria-live="polite">
+  <div class="mobile-subnav-header">
+    <span id="mobile-subnav-title">Opciones</span>
+    <button class="mobile-subnav-close" onclick="cerrarSubnavMovil()"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div id="mobile-subnav-items"></div>
+</div>
+ 
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main id="main" class="container-fluid">
+ 
+  <!-- ─── DASHBOARD ─── -->
+  <div class="page active" id="page-dashboard">
+    <div class="topbar">
+      <h1>Gestión Principal</h1>
+      <div class="clock"><i class="bi bi-clock"></i><span id="clock1">00:00</span></div>
+    </div>
+    <div class="subtabs d-flex flex-wrap align-items-center" id="dashboard-subtabs">
+      <button class="subtab-btn active" onclick="switchDashboardTab('all', this)">Home</button>
+      <button class="subtab-btn" onclick="switchDashboardTab('available', this)">Disponibles</button>
+      <button class="subtab-btn" onclick="switchDashboardTab('busy', this)">Ocupados</button>
+      <button class="subtab-btn" onclick="switchDashboardTab('mapa', this)">Mapa</button>
+      <button class="subtab-btn" onclick="switchDashboardTab('caja', this)">Caja</button>
+      <button class="btn-action ms-2" onclick="openModalTurno()"><i class="bi bi-plus-lg"></i> Iniciar Turno</button>
+    </div>
+    <div id="dashboard-tab-home">
+      <div id="dashboard-grids">
+        <!-- Generado por JS agrupado por categoría -->
+      </div>
+    </div>
+    <div id="dashboard-tab-mapa" style="display:none; margin-top:20px;">
+      <div class="tab-section-title"><i class="bi bi-map"></i> Mapa del local</div>
+      <div id="mapa-container"></div>
+    </div>
+
+    <div id="dashboard-tab-caja" style="display:none; margin-top:20px;">
+      <div class="tab-section-title"><i class="bi bi-cash-stack"></i> Caja y Facturación</div>
+
+      <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+        <button class="subtab-btn active" id="caja-mode-device-btn" onclick="setCajaMode('device', this)">Cobrar por Dispositivo</button>
+        <button class="subtab-btn" id="caja-mode-client-btn" onclick="setCajaMode('client', this)">Cobrar por Cliente</button>
+        <button class="subtab-btn" id="caja-mode-extra-btn" onclick="setCajaMode('extra', this)">Servicio Adicional</button>
+      </div>
+
+      <div id="caja-panel-device" class="table-section" style="padding:16px;">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-6">
+            <label class="form-label-ng">Dispositivo ocupado</label>
+            <select id="caja-device-select" class="form-control-ng"></select>
+          </div>
+          <div class="col-md-3">
+            <button class="btn-action" onclick="cajaLoadDevice()"><i class="bi bi-arrow-repeat"></i> Cargar Cuenta</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="caja-panel-client" class="table-section" style="display:none;padding:16px;">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-6">
+            <label class="form-label-ng">Nombre del cliente</label>
+            <input type="text" id="caja-client-search" class="form-control-ng" placeholder="Ej: Juan" oninput="cajaBuscarCliente()">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-ng">Sesiones encontradas</label>
+            <select id="caja-client-device-select" class="form-control-ng"></select>
+          </div>
+        </div>
+        <div class="mt-3">
+          <button class="btn-action" onclick="cajaLoadClientDevice()"><i class="bi bi-arrow-repeat"></i> Cargar Cuenta</button>
+        </div>
+      </div>
+
+      <div id="caja-panel-extra" class="table-section" style="display:none;padding:16px;">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label-ng">Producto/Servicio</label>
+            <select id="caja-extra-product" class="form-control-ng"></select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label-ng">Cantidad</label>
+            <input type="number" id="caja-extra-qty" min="1" value="1" class="form-control-ng">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label-ng">Cliente (opcional)</label>
+            <input type="text" id="caja-extra-cliente" class="form-control-ng" placeholder="Mostrador">
+          </div>
+          <div class="col-md-3">
+            <button class="btn-action" onclick="cajaAddExtraItem()"><i class="bi bi-plus-lg"></i> Agregar Item</button>
+          </div>
+        </div>
+
+        <div class="mt-3" style="overflow-x:auto;">
+          <table class="table finance-table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="caja-extra-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-section" style="padding:16px;margin-top:16px;">
+        <div class="table-header" style="padding:0 0 12px 0;border:none;">
+          <span>Resumen de Cobro</span>
+          <span id="caja-total-display" style="font-size:20px;color:var(--accent);">$ 0</span>
+        </div>
+        <div id="caja-resumen-body" style="font-size:14px;color:var(--text);">Selecciona un flujo de cobro para ver el detalle.</div>
+        <div class="d-flex gap-2 justify-content-end mt-3">
+          <button class="btn-action" onclick="cajaPreviewFactura()"><i class="bi bi-receipt"></i> Ver Factura</button>
+          <button class="btn-primary-ng" onclick="cajaConfirmarCobro()"><i class="bi bi-cash-coin"></i> Confirmar Cobro</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+ 
+  <!-- ─── ESTACIONES ─── -->
+  <div class="page" id="page-estaciones">
+    <div class="topbar">
+      <h1>Gestión Equipos</h1>
+      <div class="clock"><i class="bi bi-clock"></i><span id="clock2">00:00</span></div>
+    </div>
+
+    <!-- Subtabs + controles -->
+    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+      <div class="subtabs" style="margin-bottom:0" id="station-subtabs">
+        <button class="subtab-btn active" onclick="switchStationTab('home',this)">Home</button>
+        <button class="subtab-btn" onclick="switchStationTab('tarifas',this)">Tarifas</button>
+      </div>
+      <div class="ms-auto d-flex align-items-center gap-3 flex-wrap" id="station-home-controls">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input type="text" id="station-search" class="form-control" placeholder="Buscar equipos..." oninput="searchStations(this.value)"/>
+        </div>
+        <button class="btn-action" onclick="openDeviceModal()">
+          <i class="bi bi-plus-lg"></i> Agregar Equipo
+        </button>
+      </div>
+    </div>
+
+    <!-- ── TAB HOME ── -->
+    <div id="station-tab-home">
+
+      <!-- PCs -->
+      <div class="category-section">
+        <div class="category-header">
+          <i class="bi bi-pc-display-horizontal"></i>
+          <span class="cat-title">PCs Gaming</span>
+          <span class="cat-count" id="count-pc">0</span>
+        </div>
+        <div class="category-scroll-wrapper">
+          <div class="category-scroll-inner" id="station-pc-grid"></div>
+        </div>
+      </div>
+
+      <!-- PlayStation -->
+      <div class="category-section">
+        <div class="category-header">
+          <i class="bi bi-controller"></i>
+          <span class="cat-title">PlayStation</span>
+          <span class="cat-count" id="count-ps">0</span>
+        </div>
+        <div class="category-scroll-wrapper">
+          <div class="category-scroll-inner" id="station-ps-grid"></div>
+        </div>
+      </div>
+
+      <!-- Portátiles -->
+      <div class="category-section">
+        <div class="category-header">
+          <i class="bi bi-laptop"></i>
+          <span class="cat-title">Portátiles</span>
+          <span class="cat-count" id="count-laptop">0</span>
+        </div>
+        <div class="category-scroll-wrapper">
+          <div class="category-scroll-inner" id="station-laptop-grid"></div>
+        </div>
+      </div>
+      
+      <!-- Móviles -->
+      <div class="category-section">
+        <div class="category-header">
+          <i class="bi bi-phone"></i>
+          <span class="cat-title">Móviles</span>
+          <span class="cat-count" id="count-mobile">0</span>
+        </div>
+        <div class="category-scroll-wrapper">
+          <div class="category-scroll-inner" id="station-mobile-grid"></div>
+        </div>
+      </div>
+
+    </div><!-- /tab-home -->
+
+    <!-- ── TAB TARIFAS ── -->
+    <div id="station-tab-tarifas" style="display:none">
+      <div class="tab-section-title"><i class="bi bi-tag"></i> Tarifas por categoría de equipo</div>
+      <div class="tarifas-grid" id="tarifas-container"></div>
+    </div>
+
+
+
+  </div>
+
+  <!-- ─── INVENTARIO ─── -->
+  <div class="page" id="page-inventario">
+    <div class="topbar">
+      <h1>Gestión Inventario</h1>
+      <div class="clock"><i class="bi bi-clock"></i><span id="clock3">00:00</span></div>
+    </div>
+    <div class="d-flex align-items-center gap-3 flex-wrap mb-1">
+      <div class="subtabs" style="margin-bottom:0" id="inventory-subtabs">
+        <button class="subtab-btn active" onclick="switchInventoryTab('all', this)">Todos</button>
+        <button class="subtab-btn" onclick="switchInventoryTab('snacks', this)">Snacks</button>
+        <button class="subtab-btn" onclick="switchInventoryTab('drinks', this)">Bebidas</button>
+        <button class="subtab-btn" onclick="switchInventoryTab('tech', this)">Tecnología</button>
+        <button class="subtab-btn" onclick="switchInventoryTab('services', this)">Servicios</button>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn-action" onclick="openProductModal()">
+          <i class="bi bi-plus-lg"></i> Añadir Producto
+        </button>
+      </div>
+      <div class="search-box ms-auto">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" placeholder="Buscar productos..." oninput="searchInventory(this.value)"/>
+      </div>
+    </div>
+
+    <!-- ESTADÍSTICAS DE INVENTARIO -->
+    <div id="inventory-stats" class="mb-3" style="background:#f8f8f8;padding:1rem;border-radius:8px;font-size:14px;">
+      <!-- Se llena dinámicamente -->
+    </div>
+    <div id="inventory-grids">
+       <!-- Productos inyectados vía renderInventory() -->
+    </div>
+  </div>
+
+  <!-- ─── FINANZAS ─── -->
+  <div class="page" id="page-finanzas">
+    <div class="topbar">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <h1>Gestión Finanzas</h1>
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input type="text" id="finance-search" class="form-control" placeholder="Buscar en historial..." oninput="buscarEnHistorial(this.value)"/>
+        </div>
+      </div>
+      <div class="clock"><i class="bi bi-clock"></i><span id="clock4">00:00</span></div>
+    </div>
+    <div class="subtabs mb-4" id="finanzas-subtabs">
+      <button class="subtab-btn active" onclick="switchFinanceTab('home', this)">Home</button>
+      <button class="subtab-btn" onclick="switchFinanceTab('history', this)">Historial de Sesiones</button>
+      <button class="subtab-btn" onclick="switchFinanceTab('charts', this)">Gráficas</button>
+      <button class="subtab-btn" onclick="switchFinanceTab('users', this)">Usuarios</button>
+    </div>
+
+    <!-- TAB HOME -->
+    <div id="finanzas-tab-home">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Hoy</div>
+    <div class="row g-3 mb-2">
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-label">Ingresos Totales</div>
+          <div class="stat-value" id="finance-total-val">$ 0</div>
+          <div class="stat-sub" id="finance-total-sub"><i class="bi bi-arrow-up-short"></i> +0% vs ayer</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-label">Ventas de Productos</div>
+          <div class="stat-value" id="finance-products-val">$ 0</div>
+          <div class="stat-sub muted" id="finance-products-sub">0 productos vendidos</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-label">Tiempo de Juegos</div>
+          <div class="stat-value" id="finance-time-val">$ 0</div>
+          <div class="stat-sub muted" id="finance-time-sub">Promedio: 0h / cliente</div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="table-section">
+      <div class="table-header">
+        <span>Transacciones Recientes</span>
+        <span id="finance-home-count" style="font-size:12px;color:var(--muted);"></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="table finance-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tipo</th>
+              <th>Cliente</th>
+              <th>Equipo / Detalle</th>
+              <th>Duración</th>
+              <th>Fecha / Hora</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="finance-table-body">
+            <!-- Últimas transacciones inyectadas por renderFinanceHomeTable() -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div> <!-- END TAB HOME -->
+
+    <!-- TAB HISTORIAL -->
+    <div id="finanzas-tab-history" style="display:none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="tab-section-title" style="margin-bottom:0;"><i class="bi bi-clock-history"></i> Historial de Transacciones</div>
+        <div class="d-flex align-items-center gap-2" style="background:var(--card);padding:6px 12px;border-radius:6px;border:1px solid var(--border);">
+          <span style="font-size:13px;color:var(--muted);" id="finance-history-date-display">Hoy</span>
+          <label for="finance-history-date" style="cursor:pointer;margin:0;"><i class="bi bi-calendar3" style="color:#111;font-size:16px;"></i></label>
+          <input type="date" id="finance-history-date" style="position:absolute;visibility:hidden;width:0;height:0;" onchange="renderFinanceHistory(this.value)">
+        </div>
+      </div>
+      <div class="table-section">
+        <div style="overflow-x:auto;">
+          <table class="table finance-table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Cliente</th>
+                <th>Equipo / Venta</th>
+                <th>Ingreso Tiempo</th>
+                <th>Ingreso Menú</th>
+                <th>Total Pagado</th>
+              </tr>
+            </thead>
+            <tbody id="finance-history-table-body">
+              <!-- Transacciones irán aquí -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div> <!-- END TAB HISTORIAL -->
+
+    <!-- TAB GRÁFICAS -->
+    <div id="finanzas-tab-charts" style="display:none;">
+      <div class="tab-section-title"><i class="bi bi-bar-chart-line"></i> Ingresos de los Últimos 7 Días</div>
+      <div class="stat-card" style="padding:20px;">
+        <canvas id="finance-chart" width="400" height="150"></canvas>
+      </div>
+    </div> <!-- END TAB GRÁFICAS -->
+
+    <!-- TAB USUARIOS -->
+    <div id="finanzas-tab-users" style="display:none;">
+      <div class="tab-section-title"><i class="bi bi-people"></i> Gestión de Usuarios</div>
+
+      <!-- Subtabs para usuarios -->
+      <div class="subtabs mb-4" id="users-subtabs">
+        <button class="subtab-btn active" onclick="switchUsersTab('pending', this)">Pendientes</button>
+        <button class="subtab-btn" onclick="switchUsersTab('all', this)">Todos los Usuarios</button>
+        <button class="subtab-btn" onclick="switchUsersTab('sedes', this)">Sedes</button>
+      </div>
+
+      <!-- TAB USUARIOS PENDIENTES -->
+      <div id="users-tab-pending">
+        <div class="table-section">
+          <div style="overflow-x:auto;">
+            <table class="table finance-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Correo</th>
+                  <th>Teléfono</th>
+                  <th>Sede</th>
+                  <th>Fecha Registro</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="users-pending-table-body">
+                <!-- Usuarios pendientes irán aquí -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB TODOS LOS USUARIOS -->
+      <div id="users-tab-all" style="display:none;">
+        <div class="table-section">
+          <div style="overflow-x:auto;">
+            <table class="table finance-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Correo</th>
+                  <th>Rol</th>
+                  <th>Estado</th>
+                  <th>Sede</th>
+                  <th>Fecha Aprobación</th>
+                  <th>Aprobado Por</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="users-all-table-body">
+                <!-- Todos los usuarios irán aquí -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB SEDES -->
+      <div id="users-tab-sedes" style="display:none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4>Gestión de Sedes</h4>
+          <button class="btn-primary" onclick="showAddSedeModal()">
+            <i class="bi bi-plus-circle"></i> Nueva Sede
+          </button>
+        </div>
+        <div class="table-section">
+          <div style="overflow-x:auto;">
+            <table class="table finance-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Dirección</th>
+                  <th>Teléfono</th>
+                  <th>Admin Asignado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="sedes-table-body">
+                <!-- Sedes irán aquí -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- END TAB USUARIOS -->
+
+  </div>
+ 
+</main>
+
+<nav id="mobile-tabbar" aria-label="Navegación principal móvil">
+  <button class="mobile-tab-item active" data-page="dashboard" data-has-subnav="true" onclick="goTo('dashboard', this)">
+    <i class="bi bi-speedometer2"></i>
+    <span>Dashboard</span>
+  </button>
+  <button class="mobile-tab-item" data-page="estaciones" data-has-subnav="true" onclick="goTo('estaciones', this)">
+    <i class="bi bi-pc-display"></i>
+    <span>Estaciones</span>
+  </button>
+  <button class="mobile-tab-item" data-page="inventario" data-has-subnav="true" onclick="goTo('inventario', this)">
+    <i class="bi bi-box-seam"></i>
+    <span>Inventario</span>
+  </button>
+  <button class="mobile-tab-item" data-page="finanzas" data-has-subnav="true" onclick="goTo('finanzas', this)">
+    <i class="bi bi-graph-up-arrow"></i>
+    <span>Finanzas</span>
+  </button>
+</nav>
+
+<!-- ═══════════════════ MODAL INICIAR TURNO ═══════════════════ -->
+<div class="modal-overlay" id="modal-turno">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-turno')">&times;</button>
+    <h3><i class="bi bi-play-circle me-2 text-black" style="color:var(--accent)"></i>Iniciar Turno</h3>
+    <div class="mb-3">
+      <div class="form-label-ng">Cliente / Usuario</div>
+      <input class="form-control form-control-ng" type="text" id="turno-cliente" placeholder="Nombre del cliente"/>
+    </div>
+    <div class="mb-3">
+      <div class="form-label-ng">Equipo a Asignar</div>
+      <select class="form-select form-control-ng" id="turno-equipo">
+        <!-- Rellenado dinámicamente con StationDB -->
+      </select>
+    </div>
+    <div class="mb-4">
+      <div class="form-label-ng">Modalidad de Pago</div>
+      <select class="form-select form-control-ng" id="turno-modalidad">
+        <option value="hora">Por hora (Post-pago)</option>
+        <option value="1h">Tiempo fijo - 1h (Pre-pago)</option>
+        <option value="2h">Tiempo fijo - 2h (Pre-pago)</option>
+        <option value="noche">Paquete Promo Noche</option>
+      </select>
+    </div>
+    <div class="d-flex gap-2 justify-content-end">
+      <button class="btn-action" onclick="closeModal('modal-turno')">Cancelar</button>
+      <button class="btn-primary-ng" onclick="startTurn()">Iniciar Turno</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ═══════════════════ MODAL DETALLE PC ═══════════════════ -->
+<div class="modal-overlay" id="modal-pc-detail">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-pc-detail')">&times;</button>
+    <h3 id="modal-pc-title">PC-01 — Disponible</h3>
+    <div id="modal-pc-body" style="font-size:14px;color:var(--text);margin-bottom:12px;">Sin sesión activa.</div>
+    <div class="mt-4 d-flex gap-2 justify-content-end" id="modal-pc-actions">
+      <!-- Acciones inyectadas vía JS (Ej. Cerrar / Iniciar Turno / Terminar Turno) -->
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DISPOSITIVO UNIFICADO -->
+<div class="modal-overlay" id="modal-device">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-device')">&times;</button>
+    <h3 id="device-modal-title">Agregar Equipo</h3>
+
+    <!-- Selector de categoría (solo al crear) -->
+    <div id="device-category-selector" class="mb-3">
+      <div class="form-label-ng" style="margin-bottom:8px">Tipo de equipo</div>
+      <div class="cat-tabs">
+        <button type="button" class="cat-tab active" data-cat="pc" onclick="selectDeviceCategory('pc',this)">
+          <i class="bi bi-pc-display-horizontal"></i> PC
+        </button>
+        <button type="button" class="cat-tab" data-cat="ps" onclick="selectDeviceCategory('ps',this)">
+          <i class="bi bi-controller"></i> PS
+        </button>
+        <button type="button" class="cat-tab" data-cat="mobile" onclick="selectDeviceCategory('mobile',this)">
+          <i class="bi bi-phone"></i> Móvil
+        </button>
+        <button type="button" class="cat-tab" data-cat="laptop" onclick="selectDeviceCategory('laptop',this)">
+          <i class="bi bi-laptop"></i> Portátil
+        </button>
+      </div>
+    </div>
+
+    <form id="device-form" onsubmit="event.preventDefault(); saveDevice()">
+      <input type="hidden" id="device-edit-id" value="">
+      <input type="hidden" id="device-category-input" value="pc">
+
+      <div class="form-group">
+        <label>Número del equipo</label>
+        <input type="text" id="device-number" class="form-control form-control-ng" required placeholder="Auto-generado" readonly style="background-color: #f1f3f5; cursor: not-allowed; color: var(--muted);" oninput="updateIdPreview()">
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">ID resultante: <strong id="device-id-preview">PC-??</strong></div>
+      </div>
+
+      <!-- Campos de specs (generados dinámicamente) -->
+      <div id="device-specs-fields"></div>
+
+      <div class="mt-4 d-flex gap-2 justify-content-end">
+        <button type="button" class="btn-action" onclick="closeModal('modal-device')">Cancelar</button>
+        <button type="submit" class="btn-primary-ng">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL PRODUCTO -->
+<div class="modal-overlay" id="modal-product">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-product')">&times;</button>
+    <h3 id="product-modal-title">Añadir Producto</h3>
+    <form id="product-form" onsubmit="event.preventDefault(); saveProduct()">
+      <input type="hidden" id="product-edit-id" value="">
+      
+      <div class="form-group">
+        <label>Categoría</label>
+        <select id="product-category" class="form-select" name="category" onchange="toggleProductStockField()">
+          <option value="snacks">Snacks (Comida, Galletas)</option>
+          <option value="drinks">Bebidas (Gaseosas, Agua)</option>
+          <option value="tech">Tecnología & Periféricos</option>
+          <option value="services">Servicio Extra (Impresiones, etc.)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nombre del Producto / Servicio</label>
+        <input type="text" id="product-name" class="form-control" name="name" required placeholder="Ej. Coca-Cola 600ml">
+      </div>
+      <div class="form-group">
+        <label>Precio de Venta</label>
+        <input type="number" id="product-price" class="form-control" name="price" required placeholder="5000">
+      </div>
+      <div class="form-group">
+        <label>Imagen del producto</label>
+        <input type="file" id="product-image" class="form-control" accept="image/*" onchange="handleProductImageUpload(this)">
+        <input type="hidden" id="product-image-data" value="">
+        <div id="product-image-preview-wrap" style="margin-top:8px;display:none;">
+          <img id="product-image-preview" alt="Preview" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
+        </div>
+      </div>
+      <div class="form-group" id="group-product-stock">
+        <label>Stock Inicial</label>
+        <input type="number" id="product-stock" class="form-control" name="stock" placeholder="Uds. disponibles" min="0">
+      </div>
+      <div class="mt-4 d-flex gap-2 justify-content-end">
+        <button type="button" class="btn-action" onclick="closeModal('modal-product')">Cancelar</button>
+        <button type="submit" class="btn-primary-ng">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL STOCK -->
+<div class="modal-overlay" id="modal-stock">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-stock')">&times;</button>
+    <h3>Agregar Stock</h3>
+    <form onsubmit="event.preventDefault(); saveStock()">
+      <input type="hidden" id="stock-product-id">
+      <div class="form-group">
+        <label>Producto</label>
+        <div id="stock-product-name" style="font-weight:600;padding:0.75rem;background:#f8f8f8;border-radius:4px;"></div>
+      </div>
+      <div class="form-group">
+        <label>Cantidad a Agregar</label>
+        <input type="number" id="stock-quantity" class="form-control" required placeholder="10" min="1">
+      </div>
+      <div class="mt-4 d-flex gap-2 justify-content-end">
+        <button type="button" class="btn-action" onclick="closeModal('modal-stock')">Cancelar</button>
+        <button type="submit" class="btn-primary-ng">Añadir Mermas</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL CHECKOUT (FACTURACIÓN TURNO) -->
+<div class="modal-overlay" id="modal-checkout">
+  <div class="modal-box" style="max-width: 500px;">
+    <button class="modal-close" onclick="closeModal('modal-checkout')">&times;</button>
+    <h3 id="checkout-title" style="margin-bottom:12px;">Cierre de Sesión</h3>
+    <div id="checkout-body" style="font-size:14px;color:var(--text);">
+       <!-- Resumen de cuenta inyectado vía JS -->
+    </div>
+    
+    <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
+    
+    <div class="mb-3 d-flex align-items-center justify-content-between">
+      <div class="form-label-ng" style="margin:0;">Añadir Venta Rápida a la Cuenta:</div>
+    </div>
+    <div class="d-flex gap-2 mb-4">
+       <select id="checkout-product-select" class="form-control-ng" style="flex:1;">
+         <!-- Productos desde ProductDB -->
+       </select>
+       <button class="btn-action" onclick="addExtaProductToCheckout()">Añadir</button>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div style="font-size:18px;font-weight:700;">TOTAL A PAGAR:</div>
+      <div id="checkout-grand-total" style="font-size:24px;font-weight:700;color:var(--accent);">$ 0</div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2 justify-content-end">
+      <button class="btn-action" onclick="closeModal('modal-checkout')">Cancelar</button>
+      <button class="btn-primary-ng" onclick="processCheckout()">Cobrar y Liberar Equipo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD TO CART / VENTA RÁPIDA -->
+<div class="modal-overlay" id="modal-add-to-cart">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-add-to-cart')">&times;</button>
+    <h3 id="add-cart-title">Vender Producto</h3>
+    <form id="add-cart-form" onsubmit="event.preventDefault(); processAddToCart()">
+      <input type="hidden" id="add-cart-product-id">
+      
+      <div style="font-size:14px;color:var(--text);margin-bottom:12px;" id="add-cart-product-desc"></div>
+      
+      <div class="form-group">
+        <label>Cantidad</label>
+        <input type="number" id="add-cart-qty" class="form-control" required value="1" min="1">
+      </div>
+      
+      <div class="form-group">
+        <label>Cargar a...</label>
+        <select id="add-cart-target" class="form-control-ng">
+          <option value="mostrador">🛒 Venta Directa (Mostrador)</option>
+          <!-- Se llenará con las sesiones ocupadas dinámicamente -->
+        </select>
+      </div>
+
+      <div class="mt-4 d-flex gap-2 justify-content-end">
+        <button type="button" class="btn-action" onclick="closeModal('modal-add-to-cart')">Cancelar</button>
+        <button type="submit" class="btn-primary-ng">Confirmar Venta</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL FACTURA PREVIEW -->
+<div class="modal-overlay" id="modal-factura">
+  <div class="modal-box" style="max-width:700px;">
+    <button class="modal-close" onclick="closeModal('modal-factura')">&times;</button>
+    <h3 style="margin-bottom:10px;">Factura</h3>
+    <div id="factura-preview-body" style="font-size:14px;color:var(--text);"></div>
+    <div class="mt-4 d-flex justify-content-end gap-2">
+      <button class="btn-action" onclick="closeModal('modal-factura')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATIONS -->
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="index.js"></script>
+<script src="estacion.js"></script>
+<script src="inventario.js"></script>
+<script src="finanzas.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
