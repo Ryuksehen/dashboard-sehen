@@ -8,6 +8,45 @@ const estadoAutenticacion = {
   mode: 'login'
 };
 
+function sesionActiva() {
+  return Boolean(estadoAutenticacion.token);
+}
+
+function actualizarControlesSesion() {
+  const sidebarLogin = document.getElementById('sidebar-btn-login');
+  const sidebarLogout = document.getElementById('sidebar-btn-logout');
+  const mobileLogin = document.getElementById('mobile-btn-login');
+  const mobileLogout = document.getElementById('mobile-btn-logout');
+  const activa = sesionActiva();
+
+  if (sidebarLogin) sidebarLogin.style.display = activa ? 'none' : 'flex';
+  if (sidebarLogout) sidebarLogout.style.display = activa ? 'flex' : 'none';
+  if (mobileLogin) mobileLogin.style.display = activa ? 'none' : 'inline-flex';
+  if (mobileLogout) mobileLogout.style.display = activa ? 'inline-flex' : 'none';
+}
+
+function mostrarModalAuth(mensaje) {
+  cambiarModoAuth('login');
+  const subtitle = document.getElementById('auth-subtitle');
+  if (subtitle) subtitle.textContent = mensaje || 'Inicia sesión para continuar';
+  document.body.classList.add('auth-modal-open');
+}
+
+function cerrarModalAuth() {
+  document.body.classList.remove('auth-modal-open');
+}
+
+function requiereSesion(mensaje = 'Debes iniciar sesión para continuar') {
+  if (sesionActiva()) return true;
+  mostrarModalAuth(mensaje);
+  return false;
+}
+
+window.mostrarModalAuth = mostrarModalAuth;
+window.cerrarModalAuth = cerrarModalAuth;
+window.requiereSesion = requiereSesion;
+window.sesionActiva = sesionActiva;
+
 // guardo fetch original y lo intercepto para inyectar token automatico
 const fetchNativo = window.fetch.bind(window);
 window.fetch = async (input, init = {}) => {
@@ -15,8 +54,16 @@ window.fetch = async (input, init = {}) => {
   const reqInit = { ...init };
   // uso optional chaining para leer url sin romper si input no tiene esa propiedad
   const url = typeof input === 'string' ? input : (input?.url || '');
+  const method = String(reqInit.method || 'GET').toUpperCase();
   const isApi = url.startsWith('/api/');
   const isAuthRoute = url.startsWith('/api/auth/');
+  const esAccionProtegida = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
+
+  // permito navegar libremente, pero exijo login para acciones de escritura
+  if (isApi && !isAuthRoute && esAccionProtegida && !estadoAutenticacion.token) {
+    mostrarModalAuth('Inicia sesión para realizar esta acción');
+    throw new Error('Inicia sesión para realizar esta acción');
+  }
 
   // meto bearer solo en rutas api que no son auth
   if (isApi && !isAuthRoute && estadoAutenticacion.token) {
@@ -32,6 +79,9 @@ window.fetch = async (input, init = {}) => {
   if (isApi && !isAuthRoute && res.status === 401 && estadoAutenticacion.token) {
     logout(true);
     showToast('Tu sesión expiró. Inicia sesión nuevamente.', 'error');
+  }
+  if (isApi && !isAuthRoute && res.status === 401 && !estadoAutenticacion.token) {
+    mostrarModalAuth('Inicia sesión para continuar');
   }
   return res;
 };
@@ -88,7 +138,8 @@ function guardarSesion(token, user) {
   estadoAutenticacion.user = user;
   sessionStorage.setItem(CLAVE_SESION_AUTH, JSON.stringify({ token, user }));
   aplicarUsuarioSidebar(user);
-  document.body.classList.remove('auth-required');
+  actualizarControlesSesion();
+  cerrarModalAuth();
 }
 
 function limpiarSesion() {
@@ -97,6 +148,7 @@ function limpiarSesion() {
   estadoAutenticacion.user = null;
   sessionStorage.removeItem(CLAVE_SESION_AUTH);
   aplicarUsuarioSidebar(null);
+  actualizarControlesSesion();
 }
 
 async function enviarAutenticacion(e) {
@@ -142,6 +194,11 @@ async function enviarAutenticacion(e) {
 }
 
 async function logout(silent = false) {
+  if (!sesionActiva()) {
+    mostrarModalAuth('No hay sesión activa. Puedes iniciar sesión aquí.');
+    return;
+  }
+
   // pido confirmacion solo cuando el cierre es manual
   if (!silent) {
     const confirmar = await showConfirmDialog({
@@ -156,7 +213,7 @@ async function logout(silent = false) {
 
   // cierro sesion y regreso a pantalla auth
   limpiarSesion();
-  document.body.classList.add('auth-required');
+  cerrarModalAuth();
   cambiarModoAuth('login');
   if (!silent) showToast('Sesión cerrada', 'success');
 }
@@ -166,19 +223,19 @@ function iniciarAutenticacion() {
   cambiarModoAuth('login');
   const raw = sessionStorage.getItem(CLAVE_SESION_AUTH);
   if (!raw) {
-    document.body.classList.add('auth-required');
+    actualizarControlesSesion();
     return;
   }
 
   try {
     const parsed = JSON.parse(raw);
     if (!parsed?.token || !parsed?.user) {
-      document.body.classList.add('auth-required');
+      actualizarControlesSesion();
       return;
     }
     guardarSesion(parsed.token, parsed.user);
   } catch (_e) {
-    document.body.classList.add('auth-required');
+    actualizarControlesSesion();
   }
 }
 

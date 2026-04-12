@@ -17,6 +17,9 @@
 <!-- ═══════════════════ AUTH SCREEN ═══════════════════ -->
 <section id="auth-screen" aria-label="Autenticación" class="container-fluid">
   <div class="auth-card mx-auto">
+    <button type="button" class="auth-close" onclick="cerrarModalAuth()" aria-label="Cerrar modal de autenticación">
+      <i class="bi bi-x-lg"></i>
+    </button>
     <div class="auth-brand">
       <div class="auth-logo"><i class="bi bi-controller"></i></div>
       <h2>VHO GAMING</h2>
@@ -77,7 +80,10 @@
     </div>
   </div>
   <div class="sidebar-logout">
-    <button class="btn-logout" onclick="logout()">
+    <button id="sidebar-btn-login" class="btn-logout" onclick="mostrarModalAuth()">
+      <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+    </button>
+    <button id="sidebar-btn-logout" class="btn-logout" onclick="logout()">
       <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
     </button>
   </div>
@@ -95,7 +101,10 @@
       <div class="mobile-uemail" id="mobile-sidebar-uemail">correo@dominio.com</div>
     </div>
   </div>
-  <button class="mobile-logout-btn" onclick="logout()" title="Cerrar sesión">
+  <button id="mobile-btn-login" class="mobile-logout-btn" onclick="mostrarModalAuth()" title="Iniciar sesión">
+    <i class="bi bi-box-arrow-in-right"></i>
+  </button>
+  <button id="mobile-btn-logout" class="mobile-logout-btn" onclick="logout()" title="Cerrar sesión">
     <i class="bi bi-box-arrow-left"></i>
   </button>
 </nav>
