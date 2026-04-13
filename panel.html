@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Nexus Gaming</title>
+<title>VHO Gaming</title>
 <link rel="stylesheet" href="index.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Exo+2:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -17,6 +17,9 @@
 <!-- ═══════════════════ AUTH SCREEN ═══════════════════ -->
 <section id="auth-screen" aria-label="Autenticación" class="container-fluid">
   <div class="auth-card mx-auto">
+    <button type="button" class="auth-close" onclick="cerrarModalAuth()" aria-label="Cerrar modal de autenticación">
+      <i class="bi bi-x-lg"></i>
+    </button>
     <div class="auth-brand">
       <div class="auth-logo"><i class="bi bi-controller"></i></div>
       <h2>VHO GAMING</h2>
@@ -63,25 +66,56 @@
     </div>
   </div>
   <div class="sidebar-nav">
-    <div class="nav-item-custom active" onclick="goTo('dashboard', this)">
+    <div class="nav-item-custom active" data-page="dashboard" onclick="goTo('dashboard', this)">
       <i class="bi bi-speedometer2"></i> Dashboard
     </div>
-    <div class="nav-item-custom" onclick="goTo('estaciones', this)">
+    <div class="nav-item-custom" data-page="estaciones" onclick="goTo('estaciones', this)">
       <i class="bi bi-pc-display"></i> Estaciones
     </div>
-    <div class="nav-item-custom" onclick="goTo('inventario', this)">
+    <div class="nav-item-custom" data-page="inventario" onclick="goTo('inventario', this)">
       <i class="bi bi-box-seam"></i> Inventario
     </div>
-    <div class="nav-item-custom" onclick="goTo('finanzas', this)">
+    <div class="nav-item-custom" data-page="finanzas" onclick="goTo('finanzas', this)">
       <i class="bi bi-graph-up-arrow"></i> Finanzas
     </div>
   </div>
   <div class="sidebar-logout">
-    <button class="btn-logout" onclick="logout()">
+    <button id="sidebar-btn-login" class="btn-logout" onclick="mostrarModalAuth()">
+      <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+    </button>
+    <button id="sidebar-btn-logout" class="btn-logout" onclick="logout()">
       <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
     </button>
   </div>
 </nav>
+
+<nav id="mobile-topbar" aria-label="Barra superior móvil">
+  <div class="mobile-topbar-brand">
+    <div class="mobile-topbar-icon"><i class="bi bi-controller"></i></div>
+    <div class="mobile-topbar-title">VHO GAMING</div>
+  </div>
+  <div class="mobile-topbar-user">
+    <div class="mobile-avatar" id="mobile-sidebar-avatar">U</div>
+    <div class="mobile-user-meta">
+      <div class="mobile-uname" id="mobile-sidebar-uname">Usuario</div>
+      <div class="mobile-uemail" id="mobile-sidebar-uemail">correo@dominio.com</div>
+    </div>
+  </div>
+  <button id="mobile-btn-login" class="mobile-logout-btn" onclick="mostrarModalAuth()" title="Iniciar sesión">
+    <i class="bi bi-box-arrow-in-right"></i>
+  </button>
+  <button id="mobile-btn-logout" class="mobile-logout-btn" onclick="logout()" title="Cerrar sesión">
+    <i class="bi bi-box-arrow-left"></i>
+  </button>
+</nav>
+
+<div id="mobile-subnav" aria-live="polite">
+  <div class="mobile-subnav-header">
+    <span id="mobile-subnav-title">Opciones</span>
+    <button class="mobile-subnav-close" onclick="cerrarSubnavMovil()"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div id="mobile-subnav-items"></div>
+</div>
  
 <!-- ═══════════════════ MAIN ═══════════════════ -->
 <main id="main" class="container-fluid">
@@ -335,6 +369,7 @@
       <button class="subtab-btn active" onclick="switchFinanceTab('home', this)">Home</button>
       <button class="subtab-btn" onclick="switchFinanceTab('history', this)">Historial de Sesiones</button>
       <button class="subtab-btn" onclick="switchFinanceTab('charts', this)">Gráficas</button>
+      <button class="subtab-btn" onclick="switchFinanceTab('users', this)">Usuarios</button>
     </div>
 
     <!-- TAB HOME -->
@@ -430,15 +465,124 @@
       </div>
     </div> <!-- END TAB GRÁFICAS -->
 
+    <!-- TAB USUARIOS -->
+    <div id="finanzas-tab-users" style="display:none;">
+      <div class="tab-section-title"><i class="bi bi-people"></i> Gestión de Usuarios</div>
+
+      <!-- Subtabs para usuarios -->
+      <div class="subtabs mb-4" id="users-subtabs">
+        <button class="subtab-btn active" onclick="switchUsersTab('pending', this)">Pendientes</button>
+        <button class="subtab-btn" onclick="switchUsersTab('all', this)">Todos los Usuarios</button>
+        <button class="subtab-btn" onclick="switchUsersTab('sedes', this)">Sedes</button>
+      </div>
+
+      <!-- TAB USUARIOS PENDIENTES -->
+      <div id="users-tab-pending">
+        <div class="table-section">
+          <div style="overflow-x:auto;">
+            <table class="table finance-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Correo</th>
+                  <th>Teléfono</th>
+                  <th>Sede</th>
+                  <th>Fecha Registro</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="users-pending-table-body">
+                <!-- Usuarios pendientes irán aquí -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB TODOS LOS USUARIOS -->
+      <div id="users-tab-all" style="display:none;">
+        <div class="table-section">
+          <div style="overflow-x:auto;">
+            <table class="table finance-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Correo</th>
+                  <th>Rol</th>
+                  <th>Estado</th>
+                  <th>Sede</th>
+                  <th>Fecha Aprobación</th>
+                  <th>Aprobado Por</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="users-all-table-body">
+                <!-- Todos los usuarios irán aquí -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB SEDES -->
+      <div id="users-tab-sedes" style="display:none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4>Gestión de Sedes</h4>
+          <button class="btn-primary" onclick="showAddSedeModal()">
+            <i class="bi bi-plus-circle"></i> Nueva Sede
+          </button>
+        </div>
+        <div class="table-section">
+          <div style="overflow-x:auto;">
+            <table class="table finance-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Dirección</th>
+                  <th>Teléfono</th>
+                  <th>Admin Asignado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="sedes-table-body">
+                <!-- Sedes irán aquí -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- END TAB USUARIOS -->
+
   </div>
  
 </main>
+
+<nav id="mobile-tabbar" aria-label="Navegación principal móvil">
+  <button class="mobile-tab-item active" data-page="dashboard" data-has-subnav="true" onclick="goTo('dashboard', this)">
+    <i class="bi bi-speedometer2"></i>
+    <span>Dashboard</span>
+  </button>
+  <button class="mobile-tab-item" data-page="estaciones" data-has-subnav="true" onclick="goTo('estaciones', this)">
+    <i class="bi bi-pc-display"></i>
+    <span>Estaciones</span>
+  </button>
+  <button class="mobile-tab-item" data-page="inventario" data-has-subnav="true" onclick="goTo('inventario', this)">
+    <i class="bi bi-box-seam"></i>
+    <span>Inventario</span>
+  </button>
+  <button class="mobile-tab-item" data-page="finanzas" data-has-subnav="true" onclick="goTo('finanzas', this)">
+    <i class="bi bi-graph-up-arrow"></i>
+    <span>Finanzas</span>
+  </button>
+</nav>
 
 <!-- ═══════════════════ MODAL INICIAR TURNO ═══════════════════ -->
 <div class="modal-overlay" id="modal-turno">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('modal-turno')">&times;</button>
-    <h3><i class="bi bi-play-circle me-2" style="color:var(--accent)"></i>Iniciar Turno</h3>
+    <h3><i class="bi bi-play-circle me-2 text-black" style="color:var(--accent)"></i>Iniciar Turno</h3>
     <div class="mb-3">
       <div class="form-label-ng">Cliente / Usuario</div>
       <input class="form-control form-control-ng" type="text" id="turno-cliente" placeholder="Nombre del cliente"/>
@@ -671,6 +815,7 @@
 <div id="toast" class="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="index.js"></script>
 <script src="estacion.js"></script>
 <script src="inventario.js"></script>

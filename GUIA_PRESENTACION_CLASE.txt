@@ -1,0 +1,287 @@
+GUIA DE PRESENTACION - VHO GAMING
+
+1. QUE ES EL PROYECTO
+
+VHO Gaming es un sistema web para administrar un gaming center, cybercafe o sala de juegos.
+El proyecto tiene dos partes:
+
+- Landing publica: presenta el negocio, el producto y la propuesta de valor.
+- Panel administrativo: permite gestionar operaciones internas del local.
+
+La idea principal del sistema es centralizar en un solo lugar:
+
+- Control de estaciones o equipos
+- Inventario de productos
+- Cobros y caja
+- Finanzas e historial
+- Usuarios y sedes
+
+
+2. OBJETIVO DEL PROYECTO
+
+Resolver el problema de administrar un local de videojuegos o computadoras con varias tareas al mismo tiempo.
+Antes, muchas de estas tareas se hacen por separado o manualmente.
+Con este sistema, todo queda reunido en una sola interfaz.
+
+
+3. QUE VE EL USUARIO AL ENTRAR
+
+Al abrir el proyecto, primero se muestra la landing.
+Esta landing sirve para:
+
+- Presentar el producto
+- Mostrar beneficios
+- Mostrar funciones principales
+- Mostrar planes o propuesta comercial
+- Dar acceso al panel demo
+
+La landing tiene un estilo editorial tipo prensa para verse mas profesional y moderna.
+
+Archivos de la landing:
+- index.html
+- landing.css
+- landing.js
+
+
+4. QUE HACE EL PANEL ADMINISTRATIVO
+
+El panel administrativo es la parte funcional del sistema.
+Desde ahi se puede operar el negocio.
+
+El panel esta dividido en 4 modulos principales:
+
+4.1 Dashboard
+- Es la vista principal de operacion.
+- Permite ver estaciones disponibles u ocupadas.
+- Permite iniciar turnos.
+- Tiene vista Home, Disponibles, Ocupados, Mapa y Caja.
+
+4.2 Estaciones
+- Gestiona los equipos del local.
+- Permite crear, editar y eliminar equipos.
+- Permite configurar tarifas por categoria.
+- Tiene una vista de mapa del local.
+
+4.3 Inventario
+- Gestiona productos y existencias.
+- Permite registrar productos.
+- Permite agregar stock.
+- Permite hacer ventas directas o cargar productos a un cliente.
+
+4.4 Finanzas
+- Resume ingresos del negocio.
+- Muestra historial de sesiones y transacciones.
+- Tiene graficas.
+- Incluye gestion de usuarios y sedes.
+
+
+5. ESTRUCTURA TECNICA DEL PROYECTO
+
+Frontend:
+- HTML
+- CSS
+- JavaScript
+- Bootstrap 5
+- Bootstrap Icons
+- SweetAlert2
+- Chart.js
+
+Backend:
+- Node.js
+- Express
+- MySQL
+- JWT
+- bcryptjs
+- dotenv
+- cors
+
+Base de datos:
+- MySQL
+- Nombre actual: VHO_gaming
+
+
+6. ARCHIVOS PRINCIPALES Y PARA QUE SIRVEN
+
+Parte publica:
+- index.html -> landing principal
+- landing.css -> estilos de la landing
+- landing.js -> interacciones simples de la landing
+
+Parte administrativa:
+- panel.html -> acceso al panel admin
+- index.css -> estilos del panel
+- index.js -> logica principal del panel
+- estacion.js -> logica de estaciones
+- inventario.js -> logica de inventario
+- finanzas.js -> logica de finanzas, usuarios y sedes
+
+Backend:
+- backend/server.js -> servidor principal
+- backend/routes/auth.js -> login y registro
+- backend/routes/estaciones.js -> endpoints de estaciones
+- backend/routes/inventario.js -> endpoints de inventario
+- backend/routes/finanzas.js -> endpoints financieros
+- backend/routes/transacciones.js -> endpoints de transacciones
+- backend/routes/usuarios.js -> endpoints de usuarios
+- backend/db/schema.sql -> estructura de base de datos
+
+
+7. FUNCIONALIDADES MAS IMPORTANTES
+
+Estas son las funciones mas importantes para mencionar en la exposicion:
+
+- Inicio de sesion y registro
+- Control de estaciones disponibles y ocupadas
+- Inicio y cierre de turnos
+- Cobro por dispositivo
+- Cobro por cliente
+- Venta de productos adicionales
+- Manejo de inventario y stock
+- Historial de transacciones
+- Resumen financiero
+- Graficas de ingresos
+- Gestion de usuarios
+- Gestion de sedes
+
+
+8. FLUJO BASICO DE USO DEL SISTEMA
+
+Puedes explicarlo asi:
+
+1. Primero el administrador entra al sistema.
+2. Luego revisa el Dashboard para ver el estado del local.
+3. Si llega un cliente, inicia un turno en una estacion.
+4. Si el cliente consume productos, esos productos se registran desde inventario o caja.
+5. Cuando termina la sesion, se hace el cobro.
+6. Toda esa informacion queda guardada en historial y finanzas.
+7. Finalmente el administrador puede revisar ingresos, usuarios y sedes.
+
+
+9. QUE TIENE DE VALOR ESTE PROYECTO
+
+Puntos fuertes para decir en clase:
+
+- Une varias necesidades del negocio en una sola plataforma.
+- Tiene separacion entre parte publica y parte administrativa.
+- Usa frontend y backend reales, no es solo una maqueta.
+- Usa base de datos para persistir informacion.
+- Tiene estructura modular.
+- Tiene funciones de negocio reales: caja, inventario, estaciones y finanzas.
+
+
+10. COSAS TECNICAS IMPORTANTES QUE DEBES SABER EXPLICAR
+
+10.1 Como se conecta todo
+- El frontend hace peticiones al backend por rutas /api.
+- El backend procesa la informacion.
+- El backend guarda o consulta datos en MySQL.
+- Luego responde al frontend para actualizar la vista.
+
+10.2 Por que hay varios archivos JS
+- Porque cada modulo del sistema tiene su propia responsabilidad.
+- index.js maneja lo global.
+- estacion.js maneja equipos.
+- inventario.js maneja productos.
+- finanzas.js maneja reportes y usuarios.
+
+10.3 Por que hay landing y panel
+- La landing es para presentar el producto.
+- El panel es para operar el negocio.
+- Tener ambas partes separadas hace el proyecto mas claro y mas profesional.
+
+
+11. ESTADO ACTUAL PARA LA PRESENTACION
+
+Actualmente el proyecto esta pensado para mostrar:
+
+- Una landing moderna como presentacion del producto.
+- Un panel administrativo funcional para la demo.
+- El login del dashboard se mantiene disponible.
+- La parte de usuarios dentro de finanzas sigue activa para mostrar gestion administrativa.
+
+Nota:
+Para desarrollo y demo, el backend puede trabajar con AUTH_DISABLED=true.
+Eso ayuda a no bloquear la presentacion si el login falla en algun momento.
+
+
+12. POSIBLES PREGUNTAS DEL PROFESOR Y RESPUESTAS CORTAS
+
+Pregunta: Que problema resuelve el sistema?
+Respuesta: Centraliza la administracion de un gaming center en una sola plataforma, incluyendo estaciones, inventario, cobros y finanzas.
+
+Pregunta: Que tecnologias usaste?
+Respuesta: HTML, CSS, JavaScript, Bootstrap, Node.js, Express y MySQL.
+
+Pregunta: El proyecto guarda datos reales?
+Respuesta: Si. El backend se conecta a MySQL y persiste la informacion del negocio.
+
+Pregunta: Que parte es frontend y que parte es backend?
+Respuesta: La landing y el panel son frontend. El servidor, autenticacion, rutas y base de datos hacen parte del backend.
+
+Pregunta: Por que separaste landing y panel?
+Respuesta: Porque cumplen funciones distintas. La landing presenta el producto y el panel administra el negocio.
+
+Pregunta: Cual es la parte mas importante del sistema?
+Respuesta: El Dashboard, porque centraliza la operacion diaria y conecta estaciones, caja e informacion del local.
+
+
+13. COMO PRESENTARLO EN 3 A 5 MINUTOS
+
+Guion recomendado:
+
+1. Introduccion
+"Este proyecto se llama VHO Gaming. Es un sistema web para administrar un gaming center o cybercafe."
+
+2. Problema
+"Muchos negocios de este tipo manejan estaciones, inventario, cobros y usuarios por separado. La idea fue centralizar todo en una sola plataforma."
+
+3. Landing
+"Al entrar, primero vemos una landing que presenta el producto, sus beneficios y la propuesta de valor."
+
+4. Panel
+"Luego entramos al panel administrativo, donde se opera el negocio."
+
+5. Dashboard
+"Desde aqui se ven estaciones, estados, turnos y caja."
+
+6. Estaciones
+"Aqui se pueden crear y administrar los equipos y definir tarifas."
+
+7. Inventario
+"Aqui se controlan productos y stock."
+
+8. Finanzas
+"Aqui se revisan ingresos, historial, usuarios y sedes."
+
+9. Cierre
+"El valor del proyecto es que combina presentacion comercial, logica administrativa y persistencia real con base de datos."
+
+
+14. DEMO RECOMENDADA EN VIVO
+
+Si vas a mostrar el sistema en vivo, este orden es el mejor:
+
+1. Abrir la landing
+2. Mostrar seccion de funciones
+3. Mostrar planes o contacto
+4. Entrar al panel
+5. Mostrar Dashboard
+6. Mostrar Estaciones
+7. Mostrar Inventario
+8. Mostrar Finanzas
+9. Cerrar con explicacion tecnica corta
+
+
+15. CONSEJOS PARA MAÑANA
+
+- No intentes explicar todo el codigo.
+- Explica primero el problema y luego la solucion.
+- Muestra las secciones mas importantes, no todas al detalle.
+- Si preguntan por archivos, menciona que el sistema esta dividido por modulos.
+- Si algo falla en la demo, explica el flujo y vuelve a la landing o a una seccion estable.
+- Lo importante es demostrar que entiendes que hace cada parte.
+
+
+16. RESUMEN FINAL EN UNA FRASE
+
+VHO Gaming es una plataforma web para presentar y administrar un gaming center, integrando landing comercial, panel administrativo y persistencia de datos en una sola solucion.

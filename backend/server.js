@@ -1,4 +1,4 @@
-// cargo variables de entorno desde el archivo env para usar configuraciones sin quemarlas en codigo
+﻿// cargo variables de entorno desde el archivo env para usar configuraciones sin quemarlas en codigo
 require('dotenv').config();
 // importo express para levantar el servidor web
 const express  = require('express');

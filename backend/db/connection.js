@@ -1,4 +1,4 @@
-// importo la version promise de mysql2 para poder usar async await
+﻿// importo la version promise de mysql2 para poder usar async await
 const mysql = require('mysql2/promise');
 
 // creo un pool para reutilizar conexiones y evitar abrir una nueva por cada request

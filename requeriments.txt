@@ -1,4 +1,4 @@
-defusedxml==0.7.1
+﻿defusedxml==0.7.1
 et_xmlfile==2.0.0
 fonttools==4.62.0
 fpdf==1.7.2
